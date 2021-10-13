@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(),
       home: MyHomePage(dao: dao),
@@ -78,44 +79,50 @@ class _MyHomePageState extends State<MyHomePage> {
             return Center(child: (Text('${snapshot.error}')));
           } else if (snapshot.hasData) {
             var listEmployee = snapshot.data as List<Employee>;
-            return ListView.builder(
-              itemCount: listEmployee != null ? listEmployee.length : 0,
-                itemBuilder: (context, index) {
-              return Slidable(
-                  actionPane: SlidableDrawerActionPane(),
-                  secondaryActions: [
-                    IconSlideAction(
-                      caption: 'Update',
-                      color: Colors.pink,
-                      icon: Icons.update,
-                      onTap: () async{
-                        final updateEmployee = listEmployee[index];
-                        updateEmployee.firstName = Faker().person.firstName();
-                        updateEmployee.lastName = Faker().person.lastName();
-                        updateEmployee.email = Faker().internet.email();
+            return Container(
+              color: Colors.black12,
+              padding: EdgeInsets.all(0),
+              child: ListView.builder(
+                itemCount: listEmployee != null ? listEmployee.length : 0,
+                  itemBuilder: (context, index) {
+                return Slidable(
+                    actionPane: SlidableDrawerActionPane(),
+                    secondaryActions: [
+                      IconSlideAction(
+                        caption: 'Update',
+                        color: Colors.pink,
+                        icon: Icons.update,
+                        onTap: () async{
+                          final updateEmployee = listEmployee[index];
+                          updateEmployee.firstName = Faker().person.firstName();
+                          updateEmployee.lastName = Faker().person.lastName();
+                          updateEmployee.email = Faker().internet.email();
 
-                        await widget.dao!.updateEmployee(updateEmployee);
+                          await widget.dao!.updateEmployee(updateEmployee);
 
-                        showSnackBar(scaffoldKey.currentState, 'Updated');
+                          showSnackBar(scaffoldKey.currentState, 'Updated');
 
-                      },
-                    ),
-                    IconSlideAction(
-                      caption: 'Delete',
-                      color: Colors.red,
-                      icon: Icons.delete,
-                      onTap: () async{
-                        final deleteEmployee = listEmployee[index];
-                        await widget.dao!.deleteEmployee(deleteEmployee);
-                        showSnackBar(scaffoldKey.currentState, 'Deleted');
-                      },
-                    )
-                  ],
-                  child: ListTile(
-                    title: Text('${listEmployee[index].firstName} ${listEmployee[index].lastName} '),
-                    subtitle: Text('${listEmployee[index].email}'),
-                  ));
-            });
+                        },
+                      ),
+                      IconSlideAction(
+                        caption: 'Delete',
+                        color: Colors.red,
+                        icon: Icons.delete,
+                        onTap: () async{
+                          final deleteEmployee = listEmployee[index];
+                          await widget.dao!.deleteEmployee(deleteEmployee);
+                          showSnackBar(scaffoldKey.currentState, 'Deleted');
+                        },
+                      )
+                    ],
+                    child: ListTile(
+                      contentPadding: EdgeInsets.only(left: 20),
+                      tileColor: Colors.black12,
+                      title: Text('${listEmployee[index].firstName} ${listEmployee[index].lastName}', style: TextStyle(color: Colors.black, fontSize: 18),),
+                      subtitle: Text('${listEmployee[index].email}', style: TextStyle(color: Colors.black, fontSize: 14)),
+                    ));
+              }),
+            );
           } else {
             return Center(
               child: CircularProgressIndicator(),
@@ -130,6 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
 void showSnackBar(ScaffoldState? currentState, String s) {
   final snackBar = SnackBar(
     content: Text(s),
+        duration: Duration(seconds: 1),
   );
   currentState!.showSnackBar(snackBar);
 }
